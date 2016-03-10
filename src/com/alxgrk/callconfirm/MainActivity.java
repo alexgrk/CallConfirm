@@ -1,63 +1,68 @@
 package com.alxgrk.callconfirm;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.net.Uri;
+import android.content.pm.PackageManager;
 import android.os.Bundle;
+import android.support.v4.app.ActivityCompat;
 import android.util.Log;
 import android.widget.CompoundButton;
 import android.widget.CompoundButton.OnCheckedChangeListener;
 import android.widget.ToggleButton;
 
-public class MainActivity extends Activity implements DialogInterface.OnCancelListener {
-    private String phoneNumber;
+/**
+ * 
+ * @author alxgrk
+ *
+ */
+public class MainActivity extends Activity implements
+        ActivityCompat.OnRequestPermissionsResultCallback {
+
+    private static final String TAG = MainActivity.class.getSimpleName();
+
+    private ToggleButton toggle;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+        setContentView(R.layout.main_activity);
 
-        phoneNumber = getIntent().getStringExtra(PhoneCallReceiver.PHONE_NUMBER_CODE);
+        final PermissionChecker permissionChecker = new PermissionChecker(this);
+        boolean hasPermissions = ensurePermissionsGranted(permissionChecker);
 
-        if (phoneNumber != null) {
-            showDialog();
-        } else {
-            setContentView(R.layout.main_activity);
-
-            ToggleButton toggle = (ToggleButton) findViewById(R.id.toggleActivation);
-            toggle.setChecked(true);
-            toggle.setOnCheckedChangeListener(new OnCheckedChangeListener() {
-                @Override
-                public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
-                    Log.d("MainActivity", "toggle state changed");
+        toggle = (ToggleButton) findViewById(R.id.toggleActivation);
+        toggle.setChecked(hasPermissions);
+        toggle.setOnCheckedChangeListener(new OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Log.d(TAG, "toggle state changed");
+                if (isChecked) {
+                    ensurePermissionsGranted(permissionChecker);
                 }
-            });
-        }
+            }
+        });
     }
 
-    private void showDialog() {
-        Log.d("MainActivity", phoneNumber);
-
-        new AlertDialog.Builder(this).setTitle("Diesen Anruf wirklich tätigen?").setPositiveButton(
-                "Ja", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int flag) {
-                        PhoneCallReceiver.proceed = true;
-                        Intent i = new Intent(Intent.ACTION_CALL, Uri.parse("tel:" + phoneNumber));
-                        startActivity(i);
-                        finish();
-                    }
-                }).setNegativeButton("Nein", new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int flag) {
-                        dialogInterface.cancel();
-                    }
-                }).setOnCancelListener(this).show();
+    private boolean ensurePermissionsGranted(PermissionChecker permissionChecker) {
+        boolean hasPermissions = permissionChecker.hasPermissions();
+        if (!hasPermissions) {
+            Log.d(TAG, "asking user for permissions");
+            permissionChecker.askUserForMissingPermissions();
+        }
+        return hasPermissions;
     }
 
     @Override
-    public void onCancel(DialogInterface paramDialogInterface) {
-        finish();
+    public void onRequestPermissionsResult(int requestCode, String[] permissions,
+            int[] grantResults) {
+        if (requestCode == PermissionChecker.PERMISSION_REQUEST_CODE) {
+            boolean grantedAll = true;
+            int count = 0;
+            for (String permission : permissions) {
+                boolean grantResult = grantResults[count++] == PackageManager.PERMISSION_GRANTED;
+                grantedAll &= grantResult;
+                Log.d(TAG, "granted permission " + permission + ": " + grantResult);
+            }
+            toggle.setChecked(grantedAll);
+        }
     }
 }
