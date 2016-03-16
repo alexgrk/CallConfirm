@@ -3,21 +3,43 @@
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
 
-    <ToggleButton
-        android:id="@+id/toggleActivation"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_below="@+id/tV_label"
-        android:layout_centerHorizontal="true"
-        android:text="@string/on_DE" />
-
     <TextView
         android:id="@+id/tV_label"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_centerVertical="true"
-        android:text="@string/toggle_label_DE"
+        android:text="@string/toggle_label_EN"
         android:textAppearance="?android:attr/textAppearanceLarge" />
+
+    <ToggleButton
+        android:id="@+id/toggleActivation"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/tV_label"
+        android:layout_centerHorizontal="true"
+        android:text="@string/on_EN" />
+
+    <LinearLayout
+        android:id="@+id/flag_container"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_centerHorizontal="true" >
+
+	    <ImageView
+	        android:id="@+id/iV_EN"
+	        android:layout_width="80dp"
+	        android:layout_height="60dp"
+	        android:contentDescription="@string/EN"
+	        android:src="@drawable/united_kingdom_flag_icon" />
+	
+	    <ImageView
+	        android:id="@+id/iV_DE"
+	        android:layout_width="80dp"
+	        android:layout_height="60dp"
+	        android:contentDescription="@string/DE"
+	        android:src="@drawable/germany_flag_icon" />
+    </LinearLayout>
 
 </RelativeLayout>

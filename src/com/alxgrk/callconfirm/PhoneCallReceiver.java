@@ -1,9 +1,10 @@
 package com.alxgrk.callconfirm;
 
+import com.alxgrk.callconfirm.Preferences.ActivationState;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.os.Bundle;
 import android.util.Log;
 
 /**
@@ -29,6 +30,10 @@ public class PhoneCallReceiver extends BroadcastReceiver {
 
     @Override
     public void onReceive(Context context, Intent intent) {
+        Preferences preferences = new Preferences(context);
+        if (preferences.getActivationState() == ActivationState.OFF)
+            return;
+
         Log.d(TAG, "outgoing call detected");
         phoneNumber = getResultData();
         if (phoneNumber == null) {
@@ -47,11 +52,9 @@ public class PhoneCallReceiver extends BroadcastReceiver {
         setResultData(null);
 
         Intent i = new Intent(context, ConfirmationActivity.class);
-        Bundle b = new Bundle();
-        b.putString(PHONE_NUMBER_CODE, phoneNumber);
-        b.putBoolean(CALLED_FROM_RECEIVER, true);
-        i.putExtras(b);
-        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+        i.putExtra(PHONE_NUMBER_CODE, phoneNumber);
+        i.putExtra(CALLED_FROM_RECEIVER, true);
+        i.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_CLEAR_TASK);
 
         context.startActivity(i);
     }

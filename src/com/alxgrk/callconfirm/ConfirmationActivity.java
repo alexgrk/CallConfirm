@@ -28,9 +28,13 @@ public class ConfirmationActivity extends Activity implements OnCancelListener {
 
     private String phoneNumber;
 
+    private LanguageControl lang;
+
     @Override
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
+
+        lang = LanguageControl.getInstance(getApplicationContext());
 
         boolean wasStartedByPhoneReceiver = calledFromReceiver();
         Log.d(TAG, "(onCreate) called from receiver: " + wasStartedByPhoneReceiver);
@@ -40,10 +44,9 @@ public class ConfirmationActivity extends Activity implements OnCancelListener {
 
             if (phoneNumber != null) {
                 showDialog();
-                // getIntent().removeExtra(PHONE_NUMBER_CODE);
             } else {
-                Log.e(TAG, getString(R.string.error_EN));
-                Toast.makeText(this, R.string.error_EN, Toast.LENGTH_SHORT).show();
+                Log.e(TAG, lang.error());
+                Toast.makeText(this, lang.error(), Toast.LENGTH_SHORT).show();
                 finish();
             }
         } else {
@@ -85,8 +88,8 @@ public class ConfirmationActivity extends Activity implements OnCancelListener {
     private void showDialog() {
         Log.d(TAG, phoneNumber);
 
-        new AlertDialog.Builder(this).setTitle(R.string.confirmation_DE).setPositiveButton(
-                R.string.yes_DE, new DialogInterface.OnClickListener() {
+        new AlertDialog.Builder(this).setTitle(lang.confirmation()).setPositiveButton(lang.yes(),
+                new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int flag) {
                         // preserve number for dialog
@@ -98,7 +101,7 @@ public class ConfirmationActivity extends Activity implements OnCancelListener {
                         startActivity(i);
                         finish();
                     }
-                }).setNegativeButton(R.string.no_DE, new DialogInterface.OnClickListener() {
+                }).setNegativeButton(lang.no(), new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialogInterface, int flag) {
                         dialogInterface.cancel();

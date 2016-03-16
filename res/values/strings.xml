@@ -2,6 +2,9 @@
 <resources>
     <string name="app_name">Call Confirm</string>
     
+    <string name="DE">Deutsch</string>
+    <string name="EN">English</string>
+    
     <string name="on_DE">An</string>
     <string name="on_EN">On</string>
     <string name="off_DE">Aus</string>
